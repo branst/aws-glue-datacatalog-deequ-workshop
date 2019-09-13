@@ -16,9 +16,9 @@ object GlueApp{
         val glueContext: GlueContext = new GlueContext(sc)
         val sparkSession = glueContext.getSparkSession
         
-        val ouputDeequDir = "s3://bech-glue-target/target/deequ/productos_analysis"
+        val ouputDeequDir = "s3://bucket-glue-target/target/deequ/productos_analysis"
         
-        val dataset = sparkSession.read.parquet("s3://bech-glue-target/target/productos")
+        val dataset = sparkSession.read.parquet("s3://bucket-glue-target/target/productos")
 
         val analysisResult: AnalyzerContext = { AnalysisRunner
           // data to run the analysis on
