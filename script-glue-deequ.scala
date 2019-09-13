@@ -16,9 +16,9 @@ object GlueApp{
         val glueContext: GlueContext = new GlueContext(sc)
         val sparkSession = glueContext.getSparkSession
         
-        val ouputDeequDir = "s3://bech-glue-target/target/deequ/productos_results"
+        val ouputDeequDir = "s3://bucket-glue-target/target/deequ/productos_results"
         
-        val dataset = sparkSession.read.parquet("s3://bech-glue-target/target/productos")
+        val dataset = sparkSession.read.parquet("s3://bucket-glue-target/target/productos")
 
         val verificationResult: VerificationResult = { VerificationSuite()
           // data to run the verification on

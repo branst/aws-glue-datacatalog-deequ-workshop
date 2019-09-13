@@ -35,12 +35,12 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
     }
     ```
     * **Review Policy**
-    * Dar nombre *"bech-glue-policy"*
+    * Dar nombre *"my-glue-policy"*
     * **Create policy**
     * Volver a la pestaña del rol en el navegador y dar click al ícono de **refresh**
     * Seleccionar policy creada
     * **Next: Tags** -> **Next: Review**
-    * Dar nombre *"bech-glue-role"*
+    * Dar nombre *"my-glue-role"*
     * **Create role**
 
 2. Lanzar crawler sobre source S3 externo (Glue Data Catalog)
@@ -48,7 +48,7 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
     * Ir al servicio **AWS Glue**
     * Ir al apartado **Crawlers**
     * Click en **Add crawler**
-    * Nombre crawler *"bech-crawler-source"* -> **Next**
+    * Nombre crawler *"my-crawler-source"* -> **Next**
     * Data stores -> Next
     * Elegir **S3** y seleccionar *Specified path in another account*, ingresar *"s3://amazon-reviews-pds/parquet/product_category=Electronics"*
     * **Add another store "No"** -> **Next**
@@ -66,41 +66,41 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
 
     * Ir al servicio **S3**
     * **Create bucket**
-    * **Bucket name** *"bech-glue-target-'nombre-apellido'"* (debe ser único para la región) 
+    * **Bucket name** *"bucket-glue-target-'nombre-apellido'"* (debe ser único para la región) 
     * **Create**
-    * Repetir para bucket *"bech-glue-libraries-'nombre-apellido'"* (debe ser único para la región)
+    * Repetir para bucket *"bucket-glue-libraries-'nombre-apellido'"* (debe ser único para la región)
 
 4. Configurar Glue Job
 
     * Ir a AWS Glue -> **Jobs** -> **Add job**
-    * Dar nombre *"bech-job-glue"* y elegir rol creado
+    * Dar nombre *"my-job-glue"* y elegir rol creado
     * Saltar a la sección *This job runs*, seleccionar *A new script to be authored by you* -> **Next**
     * **Save job and edit script**
     * Copiar el contenido del archivo *"glue-job.py"*
-    * Cambiar la *línea 22* al path del job de Glue creado *"s3://bech-glue-target-'nombre-apellido'/target/productos"*
+    * Cambiar la *línea 22* al path del job de Glue creado *"s3://bucket-glue-target-'nombre-apellido'/target/productos"*
     * Hacer click en **Save** y luego en **Run job**
 
 5. Lanzar crawler en target S3
 
-    * Mismos pasos que en *"Paso 2"* con el nombre *"bech-crawler-target"*
-    * **Data store S3** *"s3://bech-glue-target-'nombre-apellido'/target/productos"*
+    * Mismos pasos que en *"Paso 2"* con el nombre *"my-crawler-target"*
+    * **Data store S3** *"s3://bucket-glue-target-'nombre-apellido'/target/productos"*
     * **Add database**, name *"db-target"* -> **Next** -> **Finish**
     * Click en **Run it now**
 
 6. Integrar Deequ en Glue Job para análisis de data (Spark Scala)
 
-    * Ir a S3 seleccionar bucket *"bech-glue-libraries-'nombre-apellido'"*, **Create folder** nombre *"jar"*, entrar a la carpeta creada y dar click en **Upload**, seleccione el JAR *"deequ-1.0.1.jar"* y click en **Upload**
+    * Ir a S3 seleccionar bucket *"bucket-glue-libraries-'nombre-apellido'"*, **Create folder** nombre *"jar"*, entrar a la carpeta creada y dar click en **Upload**, seleccione el JAR *"deequ-1.0.1.jar"* y click en **Upload**
     * Ir a AWS Glue -> **Jobs** -> **Add job**
-    * Dar nombre *"bech-job-analize-deequ"* y elegir rol creado
+    * Dar nombre *"my-job-analize-deequ"* y elegir rol creado
     * Cambiar **Glue version** a *Spark 2.4, Scala (Glue version 1.0)
     * Cambiar **This job runs** a *A new script to be authored by you*
     * En **Scala class name** escribir *"GlueApp"*
     * **Script file name** *"glue-deequ-integration-analize"*
-    * En **Security configuration, script libraries, and job parameters (optional)**, **Dependent jars path** *"s3://bech-glue-libraries-'nombre-apellido'/jar/deequ-1.0.1.jar"* -> **Next**
+    * En **Security configuration, script libraries, and job parameters (optional)**, **Dependent jars path** *"s3://bucket-glue-libraries-'nombre-apellido'/jar/deequ-1.0.1.jar"* -> **Next**
     * **Save job and edit script**
     * Copiar el código del archivo *"glue-analize-deequ.scala"*
-    * Cambiar en la *línea 19* al path *"s3://bech-glue-target-'nombre-apellido'/target/deequ/productos_analysis"*
-    * Cambiar la *línea 21* al path del job de Glue creado *"s3://bech-glue-target-'nombre-apellido'/target/productos"*
+    * Cambiar en la *línea 19* al path *"s3://bucket-glue-target-'nombre-apellido'/target/deequ/productos_analysis"*
+    * Cambiar la *línea 21* al path del job de Glue creado *"s3://bucket-glue-target-'nombre-apellido'/target/productos"*
     * **Save**
     * **Run job**
 
@@ -111,7 +111,7 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
     * Ir al crawler del **target** -> **Edit**
     * **Next** -> **Next** -> **Next**
     * En *Add another data store* elegir **Yes** -> **Next**
-    * En *Include path* escribir *"s3://bech-glue-target-'nombre-apellido'/target/deequ/productos_analysis"* -> **Next** hasta terminar el proceso
+    * En *Include path* escribir *"s3://bucket-glue-target-'nombre-apellido'/target/deequ/productos_analysis"* -> **Next** hasta terminar el proceso
     * Correr el crawler nuevamente para que se añada la nueva tabla al Catálogo de Glue
 
 
@@ -124,16 +124,16 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
 9. Integrar Deequ en Glue Job para testing de data (Spark Scala)
 
     * Ir a AWS Glue -> **Jobs** -> **Add job**
-    * Dar nombre *"bech-job-validate-deequ"* y elegir rol creado
+    * Dar nombre *"MY-job-validate-deequ"* y elegir rol creado
     * Cambiar **Glue version** a *Spark 2.4, Scala (Glue version 1.0)
     * Cambiar **This job runs** a *A new script to be authored by you*
     * En **Scala class name** escribir *"GlueApp"*
     * **Script file name** *"glue-deequ-integration-validate"*
-    * En **Security configuration, script libraries, and job parameters (optional)**, **Dependent jars path** *"s3://bech-glue-libraries-'nombre-apellido'/jar/deequ-1.0.1.jar"* -> **Next**
+    * En **Security configuration, script libraries, and job parameters (optional)**, **Dependent jars path** *"s3://bucket-glue-libraries-'nombre-apellido'/jar/deequ-1.0.1.jar"* -> **Next**
     * **Save job and edit script**
     * Copiar el código del archivo *"script-glue-deequ.scala"*
-    * Cambiar en la *línea 19* al path *"s3://bech-glue-target-'nombre-apellido'/target/deequ/productos_results"*
-    * Cambiar la *línea 21* al path del job de Glue creado *"s3://bech-glue-target-'nombre-apellido'/target/productos"*
+    * Cambiar en la *línea 19* al path *"s3://bucket-glue-target-'nombre-apellido'/target/deequ/productos_results"*
+    * Cambiar la *línea 21* al path del job de Glue creado *"s3://bucket-glue-target-'nombre-apellido'/target/productos"*
     * **Save**
     * **Run job**
 
@@ -144,7 +144,7 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
     * Ir al crawler del **target** -> **Edit**
     * **Next** -> **Next** -> **Next**
     * En *Add another data store* elegir **Yes** -> **Next**
-    * En *Include path* escribir *"s3://bech-glue-target-'nombre-apellido'/target/deequ/productos_results"* -> **Next** hasta terminar el proceso
+    * En *Include path* escribir *"s3://bucket-glue-target-'nombre-apellido'/target/deequ/productos_results"* -> **Next** hasta terminar el proceso
     * Correr el crawler nuevamente para que se añada la nueva tabla al Catálogo de Glue
 
 11. Consultar resultados con Athena
@@ -162,7 +162,7 @@ Vamos a necesitar crear una política y rol usuando IAM, para ello:
     * Ir a la consola de Glue al apartado *Triggers* -> *Add trigger*
     * Dar un nombre al trigger
     * Configurar *Trigger type* a *Job Events*
-    * Seleccionar el job *"bech-job-glue"* -> **Next**
-    * En *Choose jobs to trigger* seleccionar el job *"bech-job-analize-deequ"* -> **Next** -> **Finish**
+    * Seleccionar el job *"my-job-glue"* -> **Next**
+    * En *Choose jobs to trigger* seleccionar el job *"my-job-analize-deequ"* -> **Next** -> **Finish**
 
-    Ahora cada vez que el job *"bech-job-glue"* sea ejecutado, al final de su ejecución y si esta es exitosa el job *"bech-job-analize-deequ"* iniciará
+    Ahora cada vez que el job *"my-job-glue"* sea ejecutado, al final de su ejecución y si esta es exitosa el job *"my-job-analize-deequ"* iniciará
