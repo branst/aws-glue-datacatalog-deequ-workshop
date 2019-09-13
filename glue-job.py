@@ -19,7 +19,7 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 sourceDir = 's3://amazon-reviews-pds/parquet/product_category=Electronics'
-outputDir = 's3://bech-glue-target/target/productos2'
+outputDir = 's3://bech-glue-target/target/productos'
 
 source = spark.read.load(sourceDir)
 datasource0 = DynamicFrame.fromDF(source, glueContext, "source")

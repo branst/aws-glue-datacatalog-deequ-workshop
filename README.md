@@ -1,5 +1,11 @@
 # Workshop
 
+En este workshop vamos a utilizar varias herramientas y servicios de AWS, entre ellos, S3, Glue ETL, Glue Data Catalog, Quicksight Deeque para hacer un proceso de ETL y Data Quality.
+
+Crear una cuenta nueva de AWS o conectarse a una ya existente.
+
+Vamos a necesitar crear una política y rol usuando IAM, para ello:
+
 1. Crear rol para usar en Glue
 
     * Ir al servicio **IAM**
